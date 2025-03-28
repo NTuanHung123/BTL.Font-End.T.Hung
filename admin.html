@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý TechNova</title>
+  <link rel="stylesheet" href="bootstrap-5.3.3-dist/css/bootstrap.css">
+  <style>
+    .navbar-brand img {
+      height: 40px;
+      margin-right: 10px;
+    }
+    .tab-content {
+      margin-top: 20px;
+    }
+    table th, table td {
+      vertical-align: middle !important;
+    }
+  </style>
+  <script src="jquery-3.7.1.js"></script>
+  <script src="bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="admin.html">
+        <img src="./logo.jpg" alt="Logo">
+        <span>TechNova</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarAdmin">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">User</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="admin.html">Admin</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="adminTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="sanpham-tab" data-bs-toggle="tab" data-bs-target="#sanpham" type="button" role="tab" aria-controls="sanpham" aria-selected="true">
+          Quản Lý Sản Phẩm
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="donhang-tab" data-bs-toggle="tab" data-bs-target="#donhang" type="button" role="tab" aria-controls="donhang" aria-selected="false">
+          Quản Lý Đơn Hàng
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabContent">
+
+      <div class="tab-pane fade show active" id="sanpham" role="tabpanel" aria-labelledby="sanpham-tab">
+        <h3 class="mt-3">Danh Sách Sản Phẩm</h3>
+
+        <form id="formThemSP" class="row g-3 mb-4">
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="them_tenSP" placeholder="Tên sản phẩm" required>
+          </div>
+          <div class="col-md-4">
+            <input type="number" class="form-control" id="them_giaSP" placeholder="Giá sản phẩm" required>
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" id="them_img" placeholder="Link ảnh" required>
+          </div>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-success">Thêm</button>
+          </div>
+        </form>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên Sản Phẩm</th>
+              <th>Giá</th>
+              <th>Ảnh</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="dsSanPham">
+
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="donhang" role="tabpanel" aria-labelledby="donhang-tab">
+        <h3 class="mt-3">Danh Sách Đơn Hàng</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên Sản Phẩm</th>
+              <th>Tên Khách Hàng</th>
+              <th>Địa Chỉ</th>
+              <th>SĐT</th>
+              <th>Hành Động</th>
+            </tr>
+          </thead>
+          <tbody id="dsDonHang">
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="suaSPModal" tabindex="-1" aria-labelledby="suaSPModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formSuaSP">
+          <div class="modal-header">
+            <h5 class="modal-title" id="suaSPModalLabel">Sửa Sản Phẩm</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="sua_id">
+            <div class="mb-3">
+              <label for="sua_tenSP" class="form-label">Tên Sản Phẩm</label>
+              <input type="text" class="form-control" id="sua_tenSP" required>
+            </div>
+            <div class="mb-3">
+              <label for="sua_giaSP" class="form-label">Giá Sản Phẩm</label>
+              <input type="number" class="form-control" id="sua_giaSP" required>
+            </div>
+            <div class="mb-3">
+              <label for="sua_img" class="form-label">Link Ảnh</label>
+              <input type="text" class="form-control" id="sua_img" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const apiLaptop = "https://67b3eadf392f4aa94fa88cd6.mockapi.io/api/v1/laptop";
+    const apiOrder = "https://67b3eadf392f4aa94fa88cd6.mockapi.io/api/v1/order";
+
+    $(document).ready(function(){
+      loadSanPham();
+      loadDonHang();
+
+      $("#formThemSP").on("submit", function(e){
+        e.preventDefault();
+        const duLieuSP = {
+          tenSP: $("#them_tenSP").val(),
+          giaSP: $("#them_giaSP").val(),
+          img: $("#them_img").val()
+        };
+
+        $.ajax({
+          url: apiLaptop,
+          type: "POST",
+          dataType: "json",
+          data: duLieuSP,
+          success: function(response){
+            $("#formThemSP")[0].reset();
+            loadSanPham();
+          },
+          error: function(err){
+            alert("Lỗi khi thêm sản phẩm!");
+          }
+        });
+      });
+
+      $("#formSuaSP").on("submit", function(e){
+        e.preventDefault();
+        const id = $("#sua_id").val();
+        const duLieuSP = {
+          tenSP: $("#sua_tenSP").val(),
+          giaSP: $("#sua_giaSP").val(),
+          img: $("#sua_img").val()
+        };
+
+        $.ajax({
+          url: apiLaptop + "/" + id,
+          type: "PUT",
+          dataType: "json",
+          data: duLieuSP,
+          success: function(response){
+            $("#suaSPModal").modal("hide");
+            loadSanPham();
+          },
+          error: function(err){
+            alert("Lỗi khi sửa sản phẩm!");
+          }
+        });
+      });
+    });
+
+    function loadSanPham(){
+      $.ajax({
+        url: apiLaptop,
+        type: "GET",
+        dataType: "json",
+        success: function(response){
+          let html = "";
+          $.each(response, function(index, sp){
+            html += `
+              <tr>
+                <td>${sp.id}</td>
+                <td>${sp.tenSP}</td>
+                <td>${parseInt(sp.giaSP).toLocaleString()} VND</td>
+                <td><img src="${sp.img}" alt="${sp.tenSP}" style="height:50px;"></td>
+                <td>
+                  <button class="btn btn-warning btn-sm" onclick="suaSanPham('${sp.id}', '${sp.tenSP}', '${sp.giaSP}', '${sp.img}')">Sửa</button>
+                  <button class="btn btn-danger btn-sm" onclick="xoaSanPham('${sp.id}')">Xóa</button>
+                </td>
+              </tr>
+            `;
+          });
+          $("#dsSanPham").html(html);
+        },
+        error: function(err){
+          console.error("Lỗi khi load sản phẩm:", err);
+        }
+      });
+    }
+
+    function suaSanPham(id, tenSP, giaSP, img) {
+      $("#sua_id").val(id);
+      $("#sua_tenSP").val(tenSP);
+      $("#sua_giaSP").val(giaSP);
+      $("#sua_img").val(img);
+      $("#suaSPModal").modal("show");
+    }
+
+    function xoaSanPham(id){
+      if(confirm("Bạn có chắc chắn muốn xóa sản phẩm có ID: " + id + " ?")){
+        $.ajax({
+          url: apiLaptop + "/" + id,
+          type: "DELETE",
+          dataType: "json",
+          success: function(response){
+            loadSanPham();
+          },
+          error: function(err){
+            alert("Lỗi khi xóa sản phẩm!");
+          }
+        });
+      }
+    }
+
+    function loadDonHang(){
+      $.ajax({
+        url: apiOrder,
+        type: "GET",
+        dataType: "json",
+        success: function(response){
+          let html = "";
+          $.each(response, function(index, dh){
+            html += `
+              <tr>
+                <td>${dh.id}</td>
+                <td>${dh.tenSP}</td>
+                <td>${dh.name}</td>
+                <td>${dh.address}</td>
+                <td>${dh.phone}</td>
+                <td>
+                  <button class="btn btn-danger btn-sm" onclick="xoaDonHang('${dh.id}')">Xóa</button>
+                </td>
+              </tr>
+            `;
+          });
+          $("#dsDonHang").html(html);
+        },
+        error: function(err){
+          console.error("Lỗi khi load đơn hàng:", err);
+        }
+      });
+    }
+
+    function xoaDonHang(id){
+      if(confirm("Bạn có chắc chắn muốn xóa đơn hàng có ID: " + id + " ?")){
+        $.ajax({
+          url: apiOrder + "/" + id,
+          type: "DELETE",
+          dataType: "json",
+          success: function(response){
+            loadDonHang();
+          },
+          error: function(err){
+            alert("Lỗi khi xóa đơn hàng!");
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
